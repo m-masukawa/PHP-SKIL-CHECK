@@ -81,6 +81,14 @@ class BookController
             header("Location: /?page=create&" . $query);
             exit;
         }
+
+        Book::create([
+            'title'       => $title,
+            'author'      => $author,
+            'category_id' => $category_id,
+            'price'       => $price
+        ]);
+
         header('Location: /?page=index&created=1');
         exit;
     }
@@ -91,18 +99,87 @@ class BookController
         // TODO: ここを実装する（下の仮表示を本実装に置き換える）
         //   $book = Book::find($_GET['id'] ?? null);
         //   view('books/edit', ['book' => $book, 'categories' => Category::all(), 'errors' => []]);
-        view('books/edit'); // 仮表示（実装前の白画面防止。実装時に上記へ置き換える）
+        $id = $_GET['id'] ?? null;
+
+        if (!$id || !ctype_digit((string)$id)) {
+            header('Location: /?page=index');
+            exit;
+        }
+
+        $book = Book::find((int)$id);
+        if (!$book) {
+            header('Location: /?page=index');
+            exit;
+        }
+
+        $errors = $_GET['errors'] ?? [];
+        $old = $_GET['old'] ?? [];
+
+        view('books/edit', [
+            'book'       => $book,
+            'categories' => Category::all(),
+            'errors'     => $errors,
+            'old'        => $old
+        ]);
+
+        // view('books/edit'); 仮表示（実装前の白画面防止。実装時に上記へ置き換える）
     }
 
     /** ★応用課題: 更新処理（POST） */
     public function update(): void
     {
-        // TODO: ここを実装する
+        $id = $_GET['id'] ?? null;
+        if (!$id || !ctype_digit((string)$id)) {
+            header('Location: /?page=index');
+            exit;
+        }
+        $id = (int)$id;
+
+        $title       = trim($_POST['title'] ?? '');
+        $author      = trim($_POST['author'] ?? '');
+        $category_id = trim($_POST['category_id'] ?? '');
+        $price       = trim($_POST['price'] ?? '');
+
+        $errors = [];
+        if ($title === '')       $errors['title'] = 'タイトルは必須です。';
+        if ($author === '')      $errors['author'] = '著者は必須です。';
+        if ($category_id === '') $errors['category_id'] = 'カテゴリは必須です。';
+        if ($price === '')       $errors['price'] = '価格は必須です。';
+
+        if ($title !== '' && mb_strlen($title) > 100) $errors['title'] = '100文字以内で入力してください。';
+        if ($price !== '' && (!is_numeric($price) || (int)$price < 0)) $errors['price'] = '0以上の数値で入力してください。';
+
+        if (!empty($errors)) {
+            $query = http_build_query([
+                'errors' => $errors,
+                'old'    => ['title' => $title, 'author' => $author, 'category_id' => $category_id, 'price' => $price]
+            ]);
+            header("Location: /?page=edit&id={$id}&" . $query);
+            exit;
+        }
+
+        Book::update($id, [
+            'title'       => $title,
+            'author'      => $author,
+            'category_id' => $category_id,
+            'price'       => $price
+        ]);
+
+        header('Location: /?page=index&updated=1');
+        exit;
     }
 
     /** ★応用課題: 削除処理 */
     public function delete(): void
     {
-        // TODO: ここを実装する
+
+        $id = $_GET['id'] ?? null;
+
+        if ($id && ctype_digit((string)$id)) {
+            Book::delete((int)$id);
+        }
+
+        header('Location: /?page=index&deleted=1');
+        exit;
     }
 }

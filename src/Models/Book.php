@@ -29,17 +29,28 @@ class Book
      */
     public static function find(int $id): ?array
     {
-        // TODO: ここを実装する
-        return null;
-    }
+        $sql = 'SELECT * FROM books WHERE id = ?';
+        $stmt = db()->prepare($sql);
+        $stmt->execute([$id]);
 
+        $book = $stmt->fetch();
+        return $book ?: null;
+    }
     /**
      * ★基礎/応用課題: 新規登録
      * ヒント: INSERT 文を prepare() し、execute() に連想配列 or 配列で値を渡す。
      */
     public static function create(array $data): void
     {
-        // TODO: ここを実装する
+        $sql = 'INSERT INTO books (title, author, category_id, price, published_at) 
+            VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)';
+        $stmt = db()->prepare($sql);
+        $stmt->execute([
+            $data['title'],
+            $data['author'],
+            $data['category_id'],
+            $data['price']
+        ]);
     }
 
     /**
@@ -48,7 +59,15 @@ class Book
      */
     public static function update(int $id, array $data): void
     {
-        // TODO: ここを実装する
+        $sql = 'UPDATE books SET title = ?, author = ?, category_id = ?, price = ? WHERE id = ?';
+        $stmt = db()->prepare($sql);
+        $stmt->execute([
+            $data['title'],
+            $data['author'],
+            $data['category_id'],
+            $data['price'],
+            $id
+        ]);
     }
 
     /**
@@ -57,6 +76,8 @@ class Book
      */
     public static function delete(int $id): void
     {
-        // TODO: ここを実装する
+        $sql = 'DELETE FROM books WHERE id = ?';
+        $stmt = db()->prepare($sql);
+        $stmt->execute([$id]);
     }
 }
