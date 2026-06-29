@@ -27,9 +27,16 @@ class BookController
     public function create(): void
     {
         // TODO: ここを実装する（下の仮表示を本実装に置き換える）
-        //   $categories = Category::all();
-        //   view('books/create', ['categories' => $categories, 'errors' => [], 'old' => []]);
-        view('books/create'); // 仮表示（実装前の白画面防止。実装時に上記へ置き換える）
+        $categories = \App\Models\Category::all();
+        $errors = $_GET['errors'] ?? [];
+        $old = $_GET['old'] ?? [];
+
+        view('books/create', [
+            'categories' => $categories, // これがcreate.phpの $categories になります
+            'errors'     => $errors,
+            'old'        => $old
+        ]);
+        // view('books/create'); 仮表示（実装前の白画面防止。実装時に上記へ置き換える）
     }
 
     /**
@@ -42,7 +49,40 @@ class BookController
      */
     public function store(): void
     {
-        // TODO: ここを実装する
+        $title       = trim($_POST['title'] ?? '');
+        $author      = trim($_POST['author'] ?? '');
+        $category_id = trim($_POST['category_id'] ?? '');
+        $price       = trim($_POST['price'] ?? '');
+
+        $errors = [];
+
+        if ($title === '')       $errors['title'] = 'タイトルは必須です。';
+        if ($author === '')      $errors['author'] = '著者は必須です。';
+        if ($category_id === '') $errors['category_id'] = 'カテゴリは必須です。';
+        if ($price === '')       $errors['price'] = '価格は必須です。';
+
+        if ($title !== '' && mb_strlen($title) > 100) {
+            $errors['title'] = 'タイトルは100文字以内で入力してください。';
+        }
+        if ($price !== '' && (!is_numeric($price) || (int)$price < 0)) {
+            $errors['price'] = '価格は0以上の数値で入力してください。';
+        }
+
+        if (!empty($errors)) {
+            $query = http_build_query([
+                'errors' => $errors,
+                'old'    => [
+                    'title'       => $title,
+                    'author'      => $author,
+                    'category_id' => $category_id,
+                    'price'       => $price
+                ]
+            ]);
+            header("Location: /?page=create&" . $query);
+            exit;
+        }
+        header('Location: /?page=index&created=1');
+        exit;
     }
 
     /** ★応用課題: 編集フォームの表示（?page=edit&id=...） */

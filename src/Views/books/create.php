@@ -19,5 +19,53 @@ $title = '新規登録';
 
 <h2>新規書籍登録（このページを実装してください）</h2>
 
-<p class="muted">README の「基礎課題」に従って登録フォームを作成してください。</p>
+<!-- <p class="muted">README の「基礎課題」に従って登録フォームを作成してください。</p> -->
+
+<form method="post" action="/?page=store">
+
+<div>
+        <label>タイトル：</label>
+        <input type="text" name="title" value="<?= e($old['title'] ?? '') ?>">
+        <?php if (!empty($errors['title'])): ?>
+            <p style="color: red;"><?= e($errors['title']) ?></p>
+        <?php endif; ?>
+    </div>
+
+    <div>
+        <label>著者：</label>
+        <input type="text" name="author" value="<?= e($old['author'] ?? '') ?>">
+        <?php if (!empty($errors['author'])): ?>
+            <p style="color: red;"><?= e($errors['author']) ?></p>
+        <?php endif; ?>
+    </div>
+
+    <div>
+        <label>カテゴリ：</label>
+        <select name="category_id">
+            <option value="">選択してください</option>
+            <?php foreach ($categories as $cat): ?>
+                <option value="<?= e($cat['id']) ?>" <?= isset($old['category_id']) && $old['category_id'] == $cat['id'] ? 'selected' : '' ?>>
+                    <?= e($cat['name']) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+        <?php if (!empty($errors['category_id'])): ?>
+            <p style="color: red;"><?= e($errors['category_id']) ?></p>
+        <?php endif; ?>
+    </div>
+
+    <div>
+        <label>価格：</label>
+        <input type="number" name="price" value="<?= e($old['price'] ?? '') ?>">
+        <?php if (!empty($errors['price'])): ?>
+            <p style="color: red;"><?= e($errors['price']) ?></p>
+        <?php endif; ?>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <button type="submit" class="btn">登録する</button>
+    </div>
+
+</form>
+
 <p><a class="btn" href="/">← 一覧へ戻る</a></p>
