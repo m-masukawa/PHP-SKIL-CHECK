@@ -35,7 +35,6 @@ CREATE TABLE reviews (
 -- 発展課題（簡易ログイン）用。password は password_hash() のハッシュを入れる想定。
 CREATE TABLE users (
     id       INTEGER PRIMARY KEY AUTOINCREMENT,
-    name     TEXT NOT NULL,
     email    TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL
 );

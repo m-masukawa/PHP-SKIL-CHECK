@@ -3,17 +3,24 @@
 namespace App\Models;
 
 use PDO;
+use App\Models\Model;
 
 /**
  * 書籍モデル。DB アクセス（CRUD）をここに集約します。
  * all() は実装済みの見本です。find/create/update/delete を課題で実装してください。
  */
-class Book
+class Book extends Model
 {
     /**
      * 書籍を全件取得（カテゴリ名つき）。実装済みの見本。
      * JOIN で categories.name を一緒に取得しています。
      */
+
+    protected static function table(): string
+    {
+        return 'books';
+    }
+
     public static function all(): array
     {
         $sql = 'SELECT books.*, categories.name AS category_name
@@ -22,7 +29,6 @@ class Book
                 ORDER BY books.id DESC';
         return db()->query($sql)->fetchAll();
     }
-
     /**
      * ★応用課題: ID で 1 件取得（編集フォームの初期表示などで使う）
      * ヒント: prepare() + execute([$id]) でプレースホルダにバインドし、fetch() で 1 件返す。

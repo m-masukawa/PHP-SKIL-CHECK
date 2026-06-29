@@ -1,11 +1,7 @@
 <?php
 
-/**
- * 簡易オートローダ（PSR-4 相当）と共通読み込み。
- * App\Foo\Bar  ->  src/Foo/Bar.php に対応させる。
- * （「オブジェクト指向を学ぼう」で扱った namespace + オートローディングの最小版。
- *   composer がある場合は `composer dump-autoload` でも可。）
- */
+session_start();
+
 spl_autoload_register(function (string $class): void {
     $prefix = 'App\\';
     if (strncmp($class, $prefix, strlen($prefix)) !== 0) {
