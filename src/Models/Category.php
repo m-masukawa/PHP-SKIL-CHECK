@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use PDO;
 
-class Category
+class Category extends Model
 {
-    /** カテゴリを全件取得する */
-    public static function all(): array
+
+    protected static function table(): string
     {
-        $stmt = db()->query('SELECT * FROM categories ORDER BY id');
-        return $stmt->fetchAll();
+        return 'categories';
     }
+    
 }
